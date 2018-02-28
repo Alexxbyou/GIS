@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1519788179484.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1371205938",
+    "id" : "B46996E",
+    "lastKnownWriteTime" : 1519808261,
+    "last_content_update" : 1519808261223,
+    "path" : "D:/bdtest/GIS/gis.temp.R",
+    "project_path" : "gis.temp.R",
+    "properties" : {
+        "cursorPosition" : "33,13",
+        "scrollLine" : "11",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
