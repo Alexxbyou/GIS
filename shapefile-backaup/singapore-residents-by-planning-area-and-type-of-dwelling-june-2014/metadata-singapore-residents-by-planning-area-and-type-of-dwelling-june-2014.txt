@@ -1,0 +1,36 @@
+# Metadata for Singapore Residents by Planning Area and Type of Dwelling, June 2014
+---
+Identifier: '59ca755f-60a6-4729-b061-fa246742a25f'
+Name: 'singapore-residents-by-planning-area-and-type-of-dwelling-june-2014'
+Title: 'Singapore Residents by Planning Area and Type of Dwelling, June 2014'
+Description: 'Distribution of the resident population by planning area based on URA
+  MP14 and type of dwelling, June 2014'
+Topics:
+  - 'Society'
+Keywords:
+  - 'Singapore Residents by Planning Area'
+  - 'Type of Dwelling'
+Publisher:
+  Name: 'Ministry of Trade and Industry - Department of Statistics'
+  Admin 1:
+    Name: 'Chow Miew Sum'
+    Department: 'Ministry of Trade and Industry - Department of Statistics'
+    Email: 'chow_miew_sum@singstat.gov.sg'
+Sources:
+  - 'Ministry of Trade and Industry - Department of Statistics'
+License: 'https://data.gov.sg/open-data-licence'
+Frequency: 'Ad-hoc'
+Last Updated: '2016-12-09T04:00:44.956254'
+Resources:
+  -
+    Identifier: '622936e8-8596-4489-8eb6-da8703c606c1'
+    Title: 'Singapore Residents by Planning Area and Type of Dwelling, June 2014 (KML)'
+    Url: 'https://geo.data.gov.sg/plan-bdy-dwelling-type-2014/2016/10/19/kml/plan-bdy-dwelling-type-2014.zip'
+    Format: 'KML'
+    Last Updated: '2016-10-18T16:00:00'
+  -
+    Identifier: '8de53ea9-baca-4def-8a5e-049814a051aa'
+    Title: 'Singapore Residents by Planning Area and Type of Dwelling, June 2014 (SHP)'
+    Url: 'https://geo.data.gov.sg/plan-bdy-dwelling-type-2014/2016/10/19/shp/plan-bdy-dwelling-type-2014.zip'
+    Format: 'SHP'
+    Last Updated: '2016-10-18T16:00:00'

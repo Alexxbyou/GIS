@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1519894868883.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1FC8D8DD",
+    "lastKnownWriteTime" : 27303364806049904,
+    "last_content_update" : 1519894868883,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "6F264341",
+        "caption" : "PA.stats",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=PA.stats&cache_key=6F264341",
+        "displayedObservations" : 47,
+        "environment" : "",
+        "object" : "PA.stats",
+        "preview" : 0,
+        "totalObservations" : 47,
+        "variables" : 6
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

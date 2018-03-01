@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1519874584978.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "CE35C260",
+    "lastKnownWriteTime" : 1519895053,
+    "last_content_update" : 1519895053944,
+    "path" : "D:/bdtest/GIS/gis.function.R",
+    "project_path" : "gis.function.R",
+    "properties" : {
+        "cursorPosition" : "32,1",
+        "scrollLine" : "1",
+        "tempName" : "Untitled3"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

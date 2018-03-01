@@ -6,6 +6,11 @@ library(viridis)
 library(ggthemes)
 library(dplyr)
 library(scales)
+library(RODBC)
+rhs<-odbcConnect("rhs")
+
+postal<-sqlQuery(rhs,"SELECT * FROM [RHS_Workspace].[dbo].[Singapore_location_complete_2016_Apr]")
+saveRDS(postal,"shapefiles/postal.RDS")
 
 PGdata <- readOGR("shapefiles/subzone-census-2010/subzone-census2010-shp/Subzone_Census2010.shp")  
 PG <- readOGR("shapefiles/subzone-census-2010/subzone-census2010-kml/Subzone_Census2010.kml")   
@@ -21,26 +26,25 @@ AG<-left_join(AG,PGdata@data[,c("id","SHAPE_Area")])
 ##############################################################################
 #
 ##############################################################################
-PA.kml<-readOGR("shapefiles/PlanningArea2010/kml/Planning_Area_Census2010.kml")
-PA.shp<-readOGR("shapefiles/PlanningArea2010/shp/Planning_Area_Census2010.shp")
-SZ.kml<-readOGR("shapefiles/Subzone2010/kml/Subzone_Census2010.kml")
-SZ.shp<-readOGR("shapefiles/Subzone2010/shp/Subzone_Census2010.shp")
+#PA.kml<-readOGR("shapefiles/PlanningArea2010/kml/Planning_Area_Census2010.kml")
+PA.shp<-readOGR("shapefiles/PlanningArea2010/shp/Planning_Area_Census2010.shp")%>%spTransform(CRS("+proj=longlat"))
+#SZ.kml<-readOGR("shapefiles/Subzone2010/kml/Subzone_Census2010.kml")
+SZ.shp<-readOGR("shapefiles/Subzone2010/shp/Subzone_Census2010.shp")%>%spTransform(CRS("+proj=longlat"))
 
 
 PA.shp<-PA.shp%>%spTransform(CRS("+proj=longlat"))
 PA.fort<-fortify(PA.shp)
 
-map<-get_map(location=c(103.8,1.36),maptype = "roadmap", source = "google", zoom = 12)
-ggmap(map) + 
-  geom_polygon(data = PA.fort, aes(long, lat, fill = group), 
-               , colour="white", alpha=0.5)+scale_fill_discrete(guide=F)
+map<-get_map(location=c(103.833,1.36),maptype = "roadmap", source = "google", zoom = 11)
+ggmap(map, extent = 'panel') + 
+  geom_polygon(data = PA.fort, aes(long, lat, fill = group),colour="white", alpha=0.5)+scale_fill_discrete(guide=F)
 
 
 
-map<-get_map(location=c(103.8,1.36),maptype = "roadmap", source = "osm", zoom = 11)
+map<-get_map(location=c(103.8,1.366),maptype = "roadmap", source = "osm", zoom = 11)
 ggmap(map) + 
   geom_polygon(data = AG, aes(long, lat, group = group, fill=SHAPE_Area), 
-               , colour="white", alpha=0.2) + coord_equal() + 
+               colour="white", alpha=0.2) + coord_equal() + 
   scale_fill_viridis(trans = "log", breaks=brk, name="Number of recidence", guide = guide_legend( keyheight = unit(3, units = "mm"), keywidth=unit(12, units = "mm"), label.position = "bottom", title.position = 'top', nrow=1) ) +
   labs(
     title = "Title",
@@ -88,3 +92,102 @@ utm2latlong<-function(df){
 head(AG)
 
 AG[,1:2]<-as.data.frame(utm2latlong(AG[,1:2]))
+
+
+
+
+readOGR("shapefiles/PlanningArea2010/shp/Planning_Area_Census2010.shp")%>%spTransform(CRS("+proj=longlat"))
+
+
+
+
+
+library(ggplot2)
+library (rgdal)
+library (rgeos)
+library(maptools)
+library(viridis)
+library(ggthemes)
+library(dplyr)
+library(scales)
+library(RODBC)
+rhs<-odbcConnect("rhs")
+
+
+PA.resid<-readRDS("data/PA.resid.RDS")
+SZ.resid<-readRDS("data/SZ.resid.RDS")
+demo.gis<-readRDS("data/demo.gis.RDS")
+
+demo.gis<-demo.gis[!is.na(demo.gis$DGP),]
+PA.stats<-demo.gis%>%
+  group_by(DGP)%>%
+  summarize(
+    n=length(Death),
+    outcome=sum(Death,na.rm=T),
+    out.rate=mean(Death,na.rm=T)
+  )
+PA.stats<-left_join(PA.stats,PA.resid@data[,c("PLN_AREA_N","TOTAL")],by=c("DGP"="PLN_AREA_N"))
+PA.stats$recruit.rate<-PA.stats$n/PA.stats$TOTAL
+
+loc.sum<-demo.gis%>%
+  group_by(x,y)%>%
+  summarize(
+    n=length(Death)
+  )
+
+
+
+gis.PA.stat.cal<-function(
+  gis.data   # data.frame(outcome,PA)
+  ){
+  names(gis.data)<-c("outcome","PA")
+  gis.data<-gis.data[!is.na(gis.data$PA),]
+  PA.stats<-gis.data%>%
+    group_by(PA)%>%
+    summarize(
+      n=length(outcome),
+      outcome=sum(outcome,na.rm=T)
+    )
+  PA.stats<-left_join(PA.stats,PA.resid@data[,c("PLN_AREA_N","TOTAL")],by=c("PA"="PLN_AREA_N"))
+  PA.stats$out.rate<-PA.stats$outcome/PA.stats$n
+  PA.stats$recruit.rate<-PA.stats$n/PA.stats$TOTAL
+  return(PA.stats)
+}
+
+SZ.fort<-fortify(SZ.resid)
+PA.fort<-fortify(PA.resid)
+
+map<-get_map(location=c(103.833,1.36),maptype = "roadmap", source = "google", zoom = 11)
+
+
+
+
+theme.setting<-ggplot()+theme_void() +
+  coord_map()+
+  theme(
+    #axis.text = element_blank(),
+    axis.title=element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    text = element_text(color = "black"), 
+    plot.background = element_rect(fill = "white", color = NA), 
+    panel.background = element_rect(fill = "white", color = NA), 
+    legend.background = element_rect(fill = "white", color = NA),
+    
+    plot.title = element_text(size= 22, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+    plot.subtitle = element_text(size= 17, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.43, l = 2, unit = "cm")),
+    plot.caption = element_text( size=12, color = "#4e4d47", margin = margin(b = 0.3, r=-99, unit = "cm") ),
+    legend.position = c(0.7, 0.09)
+  )
+
+
+# Map canvas
+map.canvas<-theme.setting + 
+  geom_polygon(data = PA.fort, aes(long, lat, fill = group),colour="white",size =.7, alpha=0.6)+
+  geom_path(data = SZ.fort, aes(long, lat, group=group),colour="white", size=.1)
+
+# Scatter plot
+map.canvas+geom_point(data = loc.sum, aes(x,y,size=n),alpha=.1,colour="gray20")
+
+# Scatter plot
++geom_hex(data = loc.sum, aes(x,y,size=n))
