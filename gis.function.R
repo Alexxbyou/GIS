@@ -12,7 +12,21 @@ rhs<-odbcConnect("rhs")
 
 PA.resid<-readRDS("data/PA.resid.RDS")
 SZ.resid<-readRDS("data/SZ.resid.RDS")
+SZ.fort<-fortify(SZ.resid)
+PA.fort<-fortify(PA.resid)
+SZ.resid.data<-SZ.resid@data
+SZ.resid.data$id<-row.names(SZ.resid.data)
+PA.resid.data<-PA.resid@data
+PA.resid.data$id<-row.names(PA.resid.data)
+PA.resid.data$ColorCD<-runif(nrow(PA.resid.data))
+SZ.resid.data$ColorCD<-runif(nrow(SZ.resid.data))
+SZ.fort<-left_join(SZ.fort,SZ.resid.data[,c("id","ColorCD")])
+PA.fort<-left_join(PA.fort,PA.resid.data[,c("id","ColorCD")])
 
+saveRDS(PA.resid.data,"data/PA.resid.data.RDS")
+saveRDS(SZ.resid.data,"data/SZ.resid.data.RDS")
+saveRDS(PA.fort,"data/PA.fort.RDS")
+saveRDS(SZ.fort,"data/SZ.fort.RDS")
 
 
 gis.PA.stat.cal<-function(
@@ -33,69 +47,111 @@ gis.PA.stat.cal<-function(
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ggplot()+
-  geom_polygon(data = AG, aes(long, lat, group = group, fill=SHAPE_Area), 
-               colour="white", alpha=0.2) +
+bg<-c("#F2F2F2")
+# 
+theme.setting1<-ggplot()+theme_void() +coord_map()+
   theme(
-    axis.text = element_blank(),
+    #axis.text = element_blank(),
     axis.title=element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
-    text = element_text(color = "gray"), 
-    plot.background = element_rect(fill = "#f5f5f2", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f2", color = NA), 
-    legend.background = element_rect(fill = "#f5f5f2", color = NA),
+    text = element_text(color = "black"), 
+    plot.background = element_rect(fill = bg, color = NA), 
+    panel.background = element_rect(fill = bg, color = NA), 
+    legend.background = element_rect(fill = bg, color = NA),
     
     plot.title = element_text(size= 22, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
     plot.subtitle = element_text(size= 17, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.43, l = 2, unit = "cm")),
     plot.caption = element_text( size=12, color = "#4e4d47", margin = margin(b = 0.3, r=-99, unit = "cm") ),
-    legend.position = c(0.7, 0.09)
+    legend.position = c(0.8, 0.09)
   )
 
-
-#map<-get_map(location=c(103.8,1.366),maptype = "roadmap", source = "osm", zoom = 11)
-ggmap(map) + 
-  geom_polygon(data = AG, aes(long, lat, group = group, fill=SHAPE_Area), 
-               colour="white", alpha=0.2) + coord_equal() + 
-  scale_fill_viridis(trans = "log", breaks=brk, name="Number of recidence", guide = guide_legend( keyheight = unit(3, units = "mm"), keywidth=unit(12, units = "mm"), label.position = "bottom", title.position = 'top', nrow=1) ) +
-  labs(
-    title = "Title",
-    subtitle = "Subtitle", 
-    caption = "HSOR@NHG"
-  )+
+theme.setting2<-ggplot()+theme_void() +coord_map()+
   theme(
-    axis.text = element_blank(),
+    #axis.text = element_blank(),
     axis.title=element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
-    text = element_text(color = "gray"), 
-    plot.background = element_rect(fill = "#f5f5f2", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f2", color = NA), 
-    legend.background = element_rect(fill = "#f5f5f2", color = NA),
+    text = element_text(color = "black"), 
+    plot.background = element_rect(fill = "gray30", color = NA), 
+    panel.background = element_rect(fill = "gray30", color = NA), 
+    legend.background = element_rect(fill = "gray70", color = NA),
     
-    plot.title = element_text(size= 22, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    plot.subtitle = element_text(size= 17, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.43, l = 2, unit = "cm")),
-    plot.caption = element_text( size=12, color = "#4e4d47", margin = margin(b = 0.3, r=-99, unit = "cm") ),
-    legend.position = c(0.7, 0.09)
+    plot.title = element_text(size= 22, hjust=0.01, color = "white", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+    plot.subtitle = element_text(size= 17, hjust=0.01, color = "white", margin = margin(b = -0.1, t = 0.43, l = 2, unit = "cm")),
+    plot.caption = element_text( size=12, color = "white", margin = margin(b = 0.3, r=-99, unit = "cm") ),
+    legend.position = c(0.8, 0.09)
   )
 
+
+# Map canvas colour by Planning Area
+map.canvas1<-theme.setting1 + 
+  geom_polygon(data = PA.fort, aes(long, lat,group=group, fill=ColorCD),colour="white",size =.8, alpha=0.8)+
+  geom_path(data = SZ.fort, aes(long, lat,group=group),colour="white", size=.1)+scale_fill_viridis(guide=F)
+saveRDS(map.canvas1,"data/map.canvas1.rDS")
+
+map.canvas2<-theme.setting2 + 
+  geom_polygon(data = PA.fort, aes(long, lat,group=group),fill="#363636",colour="white",size =.8)+
+  geom_path(data = SZ.fort, aes(long, lat,group=group),colour="white", size=.1)
+saveRDS(map.canvas2,"data/map.canvas2.rDS")
+
+
+add.labs<-function(ggobj,title="",subtitle="",caption=""){
+  caption<-paste(caption,"HSOR@NHG",sep="\n\n")
+  ggobj<-ggobj+labs(
+    title = title,
+    subtitle = subtitle,
+    caption = caption
+  )
+  return(ggobj)
+}
+
+
+add.point<-function(
+  canvas,
+  data    # data.frame(x,y,|outcome|)
+  ,point.col="#00FFFF"
+){
+  if(ncol(data)==3){
+    var.title<-names(data)[3]
+    names(data)[3]<-"outcome"
+    vsb<-table(data$outcome)%>%min/nrow(data)>.1
+    if(vsb){
+      shp="."
+      alf=1
+    }else{
+      shp=1
+      alf=.5
+    }
+    gg<-canvas+geom_point(data=data,mapping=aes(x,y,colour=outcome),alpha=.3,position="jitter")+
+      scale_color_discrete(guide=guide_legend(
+        title=var.title,
+        direction="horizontal",
+        title.position = "top"
+      ))
+  }else{
+    gg<-canvas+geom_point(data=data,mapping=aes(x,y),colour=point.col,alpha=0.7,shape=".",position="jitter")
+  }
+  return(gg)
+}
+
+
+PA.stats.vis<-function(
+  data,  # data.frame(PA,var)
+  var.title
+){
+  names(data)<-c("PA","var")
+  data<-left_join(data,PA.resid.data[,c("PLN_AREA_N","id")],by=c("PA"="PLN_AREA_N"))
+  PA.stat.fort<-PA.fort[PA.fort$id%in%data$id,]
+  PA.stat.fort<-left_join(PA.stat.fort,data[,-1])
+  gg<-map.canvas2+
+    geom_polygon(data=PA.stat.fort,mapping=aes(long,lat,group=group,fill=var),alpha=.9,color="white")+
+    scale_fill_continuous(guide=guide_legend(
+      title=var.title,
+      direction="horizontal",
+      label.position="bottom",
+      title.position = "top"
+    ))
+}
 
 
